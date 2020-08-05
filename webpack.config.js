@@ -4,11 +4,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const webpack = require('webpack');
 process.env.NODE_ENV = process.env.NODE_ENV || 'development'
-process.env.TEST = '123'
-process.env.NODE_ENV = 'production';
+
 if(process.env.NODE_ENV == 'test') {
     require('dotenv').config({path: './.env.test'});
-}else if(process.env.NODE_ENV === 'production'){
+}else if(process.env.NODE_ENV === 'development'){
     require('dotenv').config({path: './.env.development'});
 }
 module.exports = (env) =>{
