@@ -1,4 +1,4 @@
-import {startAddExpense, editExpense, removeExpense, setExpenses, startSetExpenses} from '../../actions/expenses'
+import {startAddExpense, editExpense, removeExpense, setExpenses, startSetExpenses, startremoveExpense, startEditExpense} from '../../actions/expenses'
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import database from '../../firebase/firebase'
@@ -110,3 +110,32 @@ test('should add expense with defaults to database and store',(done)=>{
     }) 
 });
 
+test('should remove expense from firebase', (done) => {
+    const store  = createMockStore({})
+    store.dispatch(startremoveExpense({id: expenses[1].id})).then(()=>{
+        const actions = store.getActions();
+        expect(actions[0].type).toBe('REMOVE_EXPENSE');
+        return database.ref(`expenses/${expenses[1].id}`).once('value')
+    }).then((snapshot) =>{
+        expect(snapshot.val()).toBeFalsy();
+        done();  
+    });
+});
+
+test('should update expense in firebese', (done) => {
+    const updated = {
+        description: 'Updated',
+        note: expenses[1].note,
+        createdAt:expenses[1].createdAt,
+        amount:100
+    }
+    const store  = createMockStore({})
+    store.dispatch(startEditExpense(expenses[1].id, updated)).then(()=>{
+        const actions = store.getActions();
+        expect(actions[0].type).toBe('EDIT_EXPENSE');
+        return database.ref(`expenses/${expenses[1].id}`).once('value')
+    }).then((snapshot) =>{
+        expect(snapshot.val()).toEqual(updated);
+        done();  
+    });
+});
